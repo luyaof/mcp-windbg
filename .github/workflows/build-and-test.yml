@@ -22,7 +22,7 @@ jobs:
         python-version: ${{ fromJson(inputs.python-versions) }}
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         lfs: true
 
@@ -51,6 +51,9 @@ jobs:
     - name: Check version consistency
       run: .\scripts\check-version-consistency.ps1
 
+    - name: Validate server.json schema
+      run: uv run python scripts/validate-server-schema.py
+
   build:
     runs-on: windows-latest
     needs: test
@@ -59,7 +62,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         lfs: true
 
@@ -84,7 +87,7 @@ jobs:
         echo "artifact-name=$artifactName" >> $env:GITHUB_OUTPUT
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ steps.set-artifact-name.outputs.artifact-name }}
         path: dist/
