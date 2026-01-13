@@ -63,6 +63,7 @@ class RunWindbgCmdParams(BaseModel):
     dump_path: Optional[str] = Field(default=None, description="Path to the Windows crash dump file")
     connection_string: Optional[str] = Field(default=None, description="Remote connection string (e.g., 'tcp:Port=5005,Server=192.168.0.100')")
     command: str = Field(description="WinDbg command to execute")
+    timeout: Optional[int] = Field(default=None, description="Command timeout in seconds. If not specified, uses the server default timeout.")
 
     @model_validator(mode='after')
     def validate_connection_params(self):
@@ -353,7 +354,7 @@ async def serve(
                     dump_path=args.dump_path, connection_string=args.connection_string,
                     cdb_path=cdb_path, symbols_path=symbols_path, timeout=timeout, verbose=verbose
                 )
-                output = session.send_command(args.command)
+                output = session.send_command(args.command, timeout=args.timeout)
 
                 return [TextContent(
                     type="text",
